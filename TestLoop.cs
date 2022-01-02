@@ -28,7 +28,7 @@ namespace TestPerformanceCSharp
         }
     }
 
-    [MemoryDiagnoser]
+    //[MemoryDiagnoser]
     //[TailCallDiagnoser]
     //[EtwProfiler]
     //[ConcurrencyVisualizerProfiler]
@@ -37,16 +37,18 @@ namespace TestPerformanceCSharp
     public class TestLoop
     {
         //private const int iterations = 50000000;
-        private const int iterations = 50;
-        string Monkeys = "monkeys!";
-        private readonly List<string> ListToForeach = new();
+        private const int iterations = 500;
+        readonly string Monkeys = "monkeys!";
+        private readonly List<double> ListToForeach = new();
         private readonly List<Foo> ListFoo = new();
         private readonly List<Bar> ListBar = new();
         public TestLoop()
         {
             for (int i = 0; i < iterations; i++)
-                ListToForeach.Append(Monkeys);
+                ListToForeach.Append(i);
         }
+
+        public void CleanupList<T>(List<T> list) => list.Clear();
 
         [Benchmark]
         public void TestForSimple()
@@ -60,60 +62,28 @@ namespace TestPerformanceCSharp
         {
             TesteForeachFoo();
             TestForeachBar();
-        }
-
-        [Benchmark]
-        public void TestLinqBar()
-        {
-            ListBar.AddRange(from item in ListToForeach
-                             let test2 = new Bar(3.14)
-                             select test2);
-            PrintAndClear(ListBar);
-        }
-
-        [Benchmark]
-        public void TestLinqFoo()
-        {
-            ListFoo.AddRange(from item in ListToForeach
-                             let test2 = new Foo(3.14)
-                             select test2);
-            PrintAndClear(ListFoo);
-        }
-
-        [Benchmark]
-        public void TestLinqForeach()
-        {
-            ListToForeach.ForEach(item => ListFoo.Add(new Foo(3.14)));
-
-            PrintAndClear(ListFoo);
-        }
+        }            
 
         [Benchmark]
         public void TestForBar()
         {
             for (int i = 0; i < iterations; i++)
             {
-                Bar test2 = new Bar(3.14);
+                Bar test2 = new Bar(i);
                 ListBar.Add(test2);
             }
-            PrintAndClear(ListBar);
-        }
-
-        public void PrintAndClear<T>(List<T> list)
-        {
-            //Console.WriteLine(list.Count);
-            list.Clear();
-        }
+            CleanupList(ListBar);
+        }        
 
         [Benchmark]
         public void TestForFoo()
         {
             for (int i = 0; i < iterations; i++)
             {
-                Foo test = new Foo(3.14);
+                Foo test = new Foo(i);
                 ListFoo.Add(test);
             }
-            PrintAndClear(ListFoo);
+            CleanupList(ListFoo);
         }
 
         [Benchmark]
@@ -121,10 +91,10 @@ namespace TestPerformanceCSharp
         {
             foreach (var item in ListToForeach)
             {
-                Bar test2 = new Bar(3.14);
+                Bar test2 = new Bar(item);
                 ListBar.Add(test2);
             }
-            PrintAndClear(ListBar);
+            CleanupList(ListBar);
         }
 
         [Benchmark]
@@ -132,10 +102,38 @@ namespace TestPerformanceCSharp
         {
             foreach (var item in ListToForeach)
             {
-                Foo test = new Foo(3.14);
+                Foo test = new Foo(item);
                 ListFoo.Add(test);
             }
-            PrintAndClear(ListFoo);
+            CleanupList(ListFoo);
+        }
+
+        [Benchmark]
+        public void TestLinqBar()
+        {
+            ListBar.AddRange(from item in ListToForeach
+                             let test2 = new Bar(item)
+                             select test2);
+            CleanupList(ListBar);
+        }
+
+        [Benchmark]
+        public void TestLinqFoo()
+        {
+            ListFoo.AddRange(from item in ListToForeach
+                             let test2 = new Foo(item)
+                             select test2);
+            CleanupList(ListFoo);
+        }
+
+        [Benchmark]
+        public void TestLinqForeach()
+        {
+            ListToForeach.ForEach(item => ListFoo.Add(new Foo(item)));
+            ListToForeach.ForEach(item => ListBar.Add(new Bar(item)));
+
+            CleanupList(ListBar);
+            CleanupList(ListFoo);
         }
     }
 }
