@@ -7,16 +7,6 @@ using System.Linq;
 
 namespace TestPerformanceCSharp
 {
-    public struct Foo
-    {
-        public Foo(double arg) { this.y = arg; }
-        public double y;
-    }
-    public class Bar
-    {
-        public Bar(double arg) { this.y = arg; }
-        public double y;
-    }
     public class Config : ManualConfig
     {
         public Config()

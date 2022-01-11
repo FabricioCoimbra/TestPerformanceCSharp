@@ -4,6 +4,9 @@ using TestPerformanceCSharp;
 
 Console.WriteLine("Hello, World!");
 
-TestParamOrReference.Test();
-//var summary = BenchmarkRunner.Run(typeof(Program).Assembly);
+//TestParamOrReference.Test();
+var summary = BenchmarkRunner.Run(typeof(Program).Assembly);
+
+//var foo = new TestSerializeObject();
+//foo.SerliazeNative();
 
