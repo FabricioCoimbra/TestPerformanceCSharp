@@ -21,7 +21,7 @@ namespace TestPerformanceCSharp
     {
         public Config()
         {
-            AddDiagnoser(MemoryDiagnoser.Default);
+            //AddDiagnoser(MemoryDiagnoser.Default);
             //AddDiagnoser(new InliningDiagnoser());
             //AddDiagnoser(new EtwProfiler());
             //AddDiagnoser(ThreadingDiagnoser.Default);
